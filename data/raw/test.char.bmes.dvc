@@ -1,0 +1,5 @@
+outs:
+- md5: a0b7592d9fc2f254a03d9cf0bf81ba7a
+  size: 135064
+  hash: md5
+  path: test.char.bmes

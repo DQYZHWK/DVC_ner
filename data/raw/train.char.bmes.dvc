@@ -1,0 +1,5 @@
+outs:
+- md5: badab28955123a81149f5d3148290bf1
+  size: 1094528
+  hash: md5
+  path: train.char.bmes
