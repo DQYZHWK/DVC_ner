@@ -1,0 +1,5 @@
+/crf_word2id.json
+/crf_tag2id.json
+/train_data.json
+/dev_data.json
+/test_data.json
