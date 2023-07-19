@@ -9,3 +9,15 @@ stages:
       - data/processed/train_data.json
       - data/processed/dev_data.json
       - data/processed/test_data.json
+  
+  train:
+    cmd: python src/train.py
+    deps:
+      - src/train.py
+      - data/processed/crf_word2id.json
+      - data/processed/crf_tag2id.json
+      - data/processed/train_data.json
+      - data/processed/dev_data.json
+      - data/processed/test_data.json 
+    outs:
+      - models/bilstm_crf.pkl

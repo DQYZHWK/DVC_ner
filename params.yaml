@@ -1,0 +1,11 @@
+lstm:
+  emb_size: 128
+  hidden_size: 128
+  if_crf: 1  # 0:lstm    1:lstm_crf
+
+training:
+  random_seed : 42
+  batch_size: 64
+  lr: 0.001
+  epoches: 30
+  print_step: 5

@@ -28,3 +28,35 @@ stages:
       hash: md5
       md5: 855e69a63ace434be6dba0bf74fcae54
       size: 1927019
+  train:
+    cmd: python src/train.py
+    deps:
+    - path: data/processed/crf_tag2id.json
+      hash: md5
+      md5: d32d6b95c5fe744684f7b14d453ede1d
+      size: 421
+    - path: data/processed/crf_word2id.json
+      hash: md5
+      md5: a6f9fa88a4467623beddccfb9541970d
+      size: 22104
+    - path: data/processed/dev_data.json
+      hash: md5
+      md5: e4df6150a83ee573a9925af6a5c07e39
+      size: 214240
+    - path: data/processed/test_data.json
+      hash: md5
+      md5: fafd477e4c923a4d685e55e142891161
+      size: 232344
+    - path: data/processed/train_data.json
+      hash: md5
+      md5: 855e69a63ace434be6dba0bf74fcae54
+      size: 1927019
+    - path: src/train.py
+      hash: md5
+      md5: 26a261cb3d6316f212705266d7f0a36a
+      size: 16023
+    outs:
+    - path: models/bilstm_crf.pkl
+      hash: md5
+      md5: aea2bc3f18d9d7b3bda2dceac399a35a
+      size: 15471654
