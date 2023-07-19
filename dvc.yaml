@@ -4,8 +4,8 @@ stages:
     deps:
       - src/data.py
     outs:
-      - data/processed/crf_word2id.json
-      - data/processed/crf_tag2id.json
+      - data/processed/word2id.json
+      - data/processed/tag2id.json
       - data/processed/train_data.json
       - data/processed/dev_data.json
       - data/processed/test_data.json
@@ -14,10 +14,22 @@ stages:
     cmd: python src/train.py
     deps:
       - src/train.py
-      - data/processed/crf_word2id.json
-      - data/processed/crf_tag2id.json
+      - data/processed/word2id.json
+      - data/processed/tag2id.json
       - data/processed/train_data.json
       - data/processed/dev_data.json
-      - data/processed/test_data.json 
     outs:
-      - models/bilstm_crf.pkl
+      - models/model.pkl
+  
+  evaluate:
+    cmd: python src/evaluate.py
+    deps:
+      - src/evaluate.py
+      - models/model.pkl
+      - data/processed/test_data.json 
+      - data/processed/word2id.json
+      - data/processed/tag2id.json
+    # 猜测：这里如果不写outs，那么即使在evaluate.py中进行了文件写，还是没有文件输出呢
+    outs:
+      - results/pred.json
+      - results/traget_tag_list.json

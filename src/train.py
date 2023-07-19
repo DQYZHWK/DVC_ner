@@ -357,12 +357,12 @@ def load_lists_from_json(filename):
     word_lists, tag_lists = zip(*data)
     return word_lists, tag_lists
    
-def main():
+def train():
 
-    with open('data/processed/crf_word2id.json', 'r', encoding='utf-8') as f:
+    with open('data/processed/word2id.json', 'r', encoding='utf-8') as f:
         word2id = json.load(f)
 
-    with open('data/processed/crf_tag2id.json', 'r', encoding='utf-8') as f:
+    with open('data/processed/tag2id.json', 'r', encoding='utf-8') as f:
         tag2id = json.load(f)
     
     train_word_lists, train_tag_lists = load_lists_from_json('train_data')
@@ -376,12 +376,9 @@ def main():
     bilstm_model.train(train_word_lists, train_tag_lists,
                        dev_word_lists, dev_tag_lists, word2id, tag2id)
     
-
-    crf = params.lstm.if_crf
-    model_name = "bilstm_crf" if crf else "bilstm"
-    save_model(bilstm_model,"models/"+model_name+".pkl")
+    save_model(bilstm_model,"models/model.pkl")
     print("训练完毕,共用时{}秒.".format(int(time.time()-start)))
 
 
 if __name__ =='__main__':
-    main()
+    train()

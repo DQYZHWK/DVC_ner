@@ -3,3 +3,5 @@
 /train_data.json
 /dev_data.json
 /test_data.json
+/word2id.json
+/tag2id.json

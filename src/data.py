@@ -1,7 +1,10 @@
 import json
 from os.path import join
 from codecs import open
-
+from box import ConfigBox
+from ruamel.yaml import YAML
+yaml = YAML(typ="safe")
+params = ConfigBox(yaml.load(open("params.yaml", encoding="utf-8")))
 
 def build_corpus(split, make_vocab=True, data_dir="data/raw"):
     """读取数据"""
@@ -33,7 +36,7 @@ def build_corpus(split, make_vocab=True, data_dir="data/raw"):
 
 # LSTM模型训练的时候需要在word2id和tag2id加入PAD和UNK
 # 如果是加了CRF的lstm还要加入<start>和<end> (解码的时候需要用到)
-def extend_maps(word2id, tag2id, for_crf=True):
+def extend_maps(word2id, tag2id, for_crf=1):
     word2id['<unk>'] = len(word2id)
     word2id['<pad>'] = len(word2id)
     tag2id['<unk>'] = len(tag2id)
@@ -70,7 +73,7 @@ def save_lists_to_json(word_lists, tag_lists, filename):
         json.dump(data, f, ensure_ascii=False)
 
 
-def main():
+def data():
     print("读取数据...")
     # 处理raw数据
     train_word_lists, train_tag_lists, word2id, tag2id = \
@@ -79,23 +82,26 @@ def main():
     test_word_lists, test_tag_lists = build_corpus("test", make_vocab=False)
 
     # 如果是加了CRF的lstm还要加入<start>和<end> (解码的时候需要用到)
-    crf_word2id, crf_tag2id = extend_maps(word2id, tag2id, for_crf=True)
+    crf_word2id, crf_tag2id = extend_maps(word2id, tag2id, for_crf = params.lstm.if_crf)
     
-    # 还需要额外的一些数据处理
-    train_word_lists, train_tag_lists = prepocess_data_for_lstmcrf(
-        train_word_lists, train_tag_lists
-    )
-    dev_word_lists, dev_tag_lists = prepocess_data_for_lstmcrf(
-        dev_word_lists, dev_tag_lists
-    )
-    test_word_lists, test_tag_lists = prepocess_data_for_lstmcrf(
-        test_word_lists, test_tag_lists, test=True
-    )
+    # 如果是加了CRF，数据集还需要额外的一些数据处理
+    if params.lstm.if_crf:
+        train_word_lists, train_tag_lists = prepocess_data_for_lstmcrf(
+            train_word_lists, train_tag_lists
+        )
+        dev_word_lists, dev_tag_lists = prepocess_data_for_lstmcrf(
+            dev_word_lists, dev_tag_lists
+        )
+        test_word_lists, test_tag_lists = prepocess_data_for_lstmcrf(
+            test_word_lists, test_tag_lists, test=True
+        )
 
-    with open('data/processed/crf_word2id.json', 'w', encoding='utf-8') as f:
+
+
+    with open('data/processed/word2id.json', 'w', encoding='utf-8') as f:
         json.dump(crf_word2id, f, ensure_ascii=False)
 
-    with open('data/processed/crf_tag2id.json', 'w', encoding='utf-8') as f:
+    with open('data/processed/tag2id.json', 'w', encoding='utf-8') as f:
         json.dump(crf_tag2id, f, ensure_ascii=False)
 
     save_lists_to_json(train_word_lists, train_tag_lists, 'train_data')
@@ -105,4 +111,4 @@ def main():
     save_lists_to_json(test_word_lists, test_tag_lists, 'test_data')
 
 if __name__ == "__main__":
-    main()
+    data()

@@ -5,21 +5,17 @@ stages:
     deps:
     - path: src/data.py
       hash: md5
-      md5: 59a65ac5636d84c1ce975cea8e3dc836
-      size: 3699
+      md5: bd334e3138bebb6c064de7a02ae30ddc
+      size: 3946
     outs:
-    - path: data/processed/crf_tag2id.json
-      hash: md5
-      md5: d32d6b95c5fe744684f7b14d453ede1d
-      size: 421
-    - path: data/processed/crf_word2id.json
-      hash: md5
-      md5: a6f9fa88a4467623beddccfb9541970d
-      size: 22104
     - path: data/processed/dev_data.json
       hash: md5
       md5: e4df6150a83ee573a9925af6a5c07e39
       size: 214240
+    - path: data/processed/tag2id.json
+      hash: md5
+      md5: d32d6b95c5fe744684f7b14d453ede1d
+      size: 421
     - path: data/processed/test_data.json
       hash: md5
       md5: fafd477e4c923a4d685e55e142891161
@@ -28,35 +24,67 @@ stages:
       hash: md5
       md5: 855e69a63ace434be6dba0bf74fcae54
       size: 1927019
+    - path: data/processed/word2id.json
+      hash: md5
+      md5: a6f9fa88a4467623beddccfb9541970d
+      size: 22104
   train:
     cmd: python src/train.py
     deps:
-    - path: data/processed/crf_tag2id.json
-      hash: md5
-      md5: d32d6b95c5fe744684f7b14d453ede1d
-      size: 421
-    - path: data/processed/crf_word2id.json
-      hash: md5
-      md5: a6f9fa88a4467623beddccfb9541970d
-      size: 22104
     - path: data/processed/dev_data.json
       hash: md5
       md5: e4df6150a83ee573a9925af6a5c07e39
       size: 214240
-    - path: data/processed/test_data.json
+    - path: data/processed/tag2id.json
       hash: md5
-      md5: fafd477e4c923a4d685e55e142891161
-      size: 232344
+      md5: d32d6b95c5fe744684f7b14d453ede1d
+      size: 421
     - path: data/processed/train_data.json
       hash: md5
       md5: 855e69a63ace434be6dba0bf74fcae54
       size: 1927019
+    - path: data/processed/word2id.json
+      hash: md5
+      md5: a6f9fa88a4467623beddccfb9541970d
+      size: 22104
     - path: src/train.py
       hash: md5
-      md5: 26a261cb3d6316f212705266d7f0a36a
-      size: 16023
+      md5: b911a15169773c2a07ade225fc07fff6
+      size: 15927
     outs:
-    - path: models/bilstm_crf.pkl
+    - path: models/model.pkl
       hash: md5
-      md5: aea2bc3f18d9d7b3bda2dceac399a35a
-      size: 15471654
+      md5: 7dfaded425599e1aed6146c5af3e3d5f
+      size: 15471662
+  evaluate:
+    cmd: python src/evaluate.py
+    deps:
+    - path: data/processed/tag2id.json
+      hash: md5
+      md5: d32d6b95c5fe744684f7b14d453ede1d
+      size: 421
+    - path: data/processed/test_data.json
+      hash: md5
+      md5: fafd477e4c923a4d685e55e142891161
+      size: 232344
+    - path: data/processed/word2id.json
+      hash: md5
+      md5: a6f9fa88a4467623beddccfb9541970d
+      size: 22104
+    - path: models/model.pkl
+      hash: md5
+      md5: 7dfaded425599e1aed6146c5af3e3d5f
+      size: 15471662
+    - path: src/evaluate.py
+      hash: md5
+      md5: 142f65943bd76a73571348038e2cce63
+      size: 2008
+    outs:
+    - path: results/pred.json
+      hash: md5
+      md5: 2fc05b263eb664d6104425353a48297a
+      size: 122508
+    - path: results/traget_tag_list.json
+      hash: md5
+      md5: 9c3e12d328622c7b44c4a539552cec87
+      size: 123469
