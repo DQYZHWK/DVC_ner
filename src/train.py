@@ -1,6 +1,6 @@
 from itertools import zip_longest
 from copy import deepcopy
-
+from dvclive import Live
 import torch
 import torch.nn as nn
 from torch.nn.utils.rnn import pad_packed_sequence, pack_padded_sequence
@@ -229,30 +229,39 @@ class BILSTM_Model(object):
             dev_word_lists, dev_tag_lists)
 
         B = self.batch_size
-        for e in range(1, self.epoches+1):
-            self.step = 0
-            losses = 0.
-            for ind in range(0, len(word_lists), B):
-                # batch_size个小的list
-                batch_sents = word_lists[ind:ind+B]
-                batch_tags = tag_lists[ind:ind+B]
-
-                losses += self.train_step(batch_sents,
-                                          batch_tags, word2id, tag2id)
-
-                if self.step % params.training.print_step == 0:
-                    total_step = (len(word_lists) // B + 1)
-                    print("Epoch {}, step/total_step: {}/{} {:.2f}% Loss:{:.4f}".format(
-                        e, self.step, total_step,
-                        100. * self.step / total_step,
-                        losses / self.print_step
-                    ))
-                    losses = 0.
-
-            # 每轮结束测试在验证集上的性能，保存最好的一个
-            val_loss = self.validate(
-                dev_word_lists, dev_tag_lists, word2id, tag2id)
-            print("Epoch {}, Val Loss:{:.4f}".format(e, val_loss))
+        with Live("results/train", report=None,save_dvc_exp=True) as live:
+            for e in range(1, self.epoches+1):
+                self.step = 0
+                losses = 0.
+                epoch_losses = 0
+                for ind in range(0, len(word_lists), B):
+                    # batch_size个小的list
+                    batch_sents = word_lists[ind:ind+B]
+                    batch_tags = tag_lists[ind:ind+B]
+                    loss = self.train_step(batch_sents,batch_tags, word2id, tag2id)
+                   
+                    losses += loss
+                    epoch_losses +=loss
+                    if self.step % params.training.print_step == 0:
+                        total_step = (len(word_lists) // B + 1)
+                        print("Epoch {}, step/total_step: {}/{} {:.2f}% Loss:{:.4f}".format(
+                            e, self.step, total_step,
+                            100. * self.step / total_step,
+                            losses / self.print_step
+                        ))
+                        losses = 0.
+                live.log_metric('train/loss',epoch_losses/self.step)
+                # 每轮结束测试在验证集上的性能，保存最好的一个
+                val_loss = self.validate(
+                    dev_word_lists, dev_tag_lists, word2id, tag2id)
+                live.log_metric('eval/loss',val_loss)
+                print("Epoch {}, Val Loss:{:.4f}".format(e, val_loss))
+                
+                live.next_step()
+                
+            # 训练结束，把整个Bilstm_Model对象存贮下来    
+            save_model(self,"models/model.pkl")
+            live.log_artifact("models/model.pkl", type="model", name="lstm or lstm_crf model")
 
     def train_step(self, batch_sents, batch_tags, word2id, tag2id):
         self.model.train()
@@ -312,39 +321,39 @@ class BILSTM_Model(object):
     def test(self, word_lists, tag_lists, word2id, tag2id):
         """返回最佳模型在测试集上的预测结果"""
         # 准备数据
-        word_lists, tag_lists, indices = sort_by_lengths(word_lists, tag_lists)
-        tensorized_sents, lengths = tensorized(word_lists, word2id)
-        tensorized_sents = tensorized_sents.to(self.device)
+        with Live("results/evaluate", report=None, cache_images=True,save_dvc_exp=True) as live:
+            word_lists, tag_lists, indices = sort_by_lengths(word_lists, tag_lists)
+            tensorized_sents, lengths = tensorized(word_lists, word2id)
+            tensorized_sents = tensorized_sents.to(self.device)
 
-        self.best_model.eval()
-        with torch.no_grad():
-            batch_tagids = self.best_model.test(
-                tensorized_sents, lengths, tag2id)
+            self.best_model.eval()
+            with torch.no_grad():
+                batch_tagids = self.best_model.test(
+                    tensorized_sents, lengths, tag2id)
 
-        # 将id转化为标注
-        pred_tag_lists = []
-        id2tag = dict((id_, tag) for tag, id_ in tag2id.items())
-        for i, ids in enumerate(batch_tagids):
-            tag_list = []
-            if self.crf:
-                for j in range(lengths[i] - 1):  # crf解码过程中，end被舍弃
-                    tag_list.append(id2tag[ids[j].item()])
-            else:
-                for j in range(lengths[i]):
-                    tag_list.append(id2tag[ids[j].item()])
-            pred_tag_lists.append(tag_list)
+            # 将id转化为标注
+            pred_tag_lists = []
+            id2tag = dict((id_, tag) for tag, id_ in tag2id.items())
+            for i, ids in enumerate(batch_tagids):
+                tag_list = []
+                if self.crf:
+                    for j in range(lengths[i] - 1):  # crf解码过程中，end被舍弃
+                        tag_list.append(id2tag[ids[j].item()])
+                else:
+                    for j in range(lengths[i]):
+                        tag_list.append(id2tag[ids[j].item()])
+                pred_tag_lists.append(tag_list)
 
-        # indices存有根据长度排序后的索引映射的信息
-        # 比如若indices = [1, 2, 0] 则说明原先索引为1的元素映射到的新的索引是0，
-        # 索引为2的元素映射到新的索引是1...
-        # 下面根据indices将pred_tag_lists和tag_lists转化为原来的顺序
-        ind_maps = sorted(list(enumerate(indices)), key=lambda e: e[1])
-        indices, _ = list(zip(*ind_maps))
-        pred_tag_lists = [pred_tag_lists[i] for i in indices]
-        tag_lists = [tag_lists[i] for i in indices]
-
-        return pred_tag_lists, tag_lists
-
+            # indices存有根据长度排序后的索引映射的信息
+            # 比如若indices = [1, 2, 0] 则说明原先索引为1的元素映射到的新的索引是0，
+            # 索引为2的元素映射到新的索引是1...
+            # 下面根据indices将pred_tag_lists和tag_lists转化为原来的顺序
+            ind_maps = sorted(list(enumerate(indices)), key=lambda e: e[1])
+            indices, _ = list(zip(*ind_maps))
+            pred_tag_lists = [pred_tag_lists[i] for i in indices]
+            tag_lists = [tag_lists[i] for i in indices]
+            
+            live.log_sklearn_plot("confusion_matrix",tag_lists, pred_tag_lists, name="cm.json")
 
 def save_model(model, file_name):
     """用于保存模型"""
@@ -376,7 +385,7 @@ def train():
     bilstm_model.train(train_word_lists, train_tag_lists,
                        dev_word_lists, dev_tag_lists, word2id, tag2id)
     
-    save_model(bilstm_model,"models/model.pkl")
+    #save_model(bilstm_model,"models/model.pkl")
     print("训练完毕,共用时{}秒.".format(int(time.time()-start)))
 
 

@@ -44,15 +44,9 @@ def evaluate():
     bilstm_model = load_model(model_path)
     #bilstm_model.model.bilstm.bilstm.flatten_parameters()  # remove warning
     
-    pred, target_tag_list = bilstm_model.test(test_word_lists, test_tag_lists,
-                                                      word2id, tag2id)
-    
-    
+    bilstm_model.test(test_word_lists, test_tag_lists,word2id, tag2id)
+
     print("评估完毕,共用时{}秒.".format(int(time.time()-start)))
-    with open('results/pred.json', 'w', encoding='utf-8') as f:
-        json.dump(pred, f, ensure_ascii=False)
-    with open('results/traget_tag_list.json', 'w', encoding='utf-8') as f:
-        json.dump(target_tag_list, f, ensure_ascii=False)
     
 if __name__ == '__main__':
     evaluate()

@@ -1,0 +1,8 @@
+plots:
+- plots/sklearn/cm.json:
+    template: confusion
+    x: actual
+    y: predicted
+    title: Confusion Matrix
+    x_label: True Label
+    y_label: Predicted Label

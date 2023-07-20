@@ -49,13 +49,13 @@ stages:
       size: 22104
     - path: src/train.py
       hash: md5
-      md5: b911a15169773c2a07ade225fc07fff6
-      size: 15927
+      md5: 25a9ad5a5722b283afebea23a0f6bc4b
+      size: 16863
     outs:
     - path: models/model.pkl
       hash: md5
-      md5: 7dfaded425599e1aed6146c5af3e3d5f
-      size: 15471662
+      md5: 9f34ec49feeaf6704a2871f676bb1b29
+      size: 15471668
   evaluate:
     cmd: python src/evaluate.py
     deps:
@@ -73,18 +73,9 @@ stages:
       size: 22104
     - path: models/model.pkl
       hash: md5
-      md5: 7dfaded425599e1aed6146c5af3e3d5f
-      size: 15471662
+      md5: 9f34ec49feeaf6704a2871f676bb1b29
+      size: 15471668
     - path: src/evaluate.py
       hash: md5
-      md5: 142f65943bd76a73571348038e2cce63
-      size: 2008
-    outs:
-    - path: results/pred.json
-      hash: md5
-      md5: 2fc05b263eb664d6104425353a48297a
-      size: 122508
-    - path: results/traget_tag_list.json
-      hash: md5
-      md5: 9c3e12d328622c7b44c4a539552cec87
-      size: 123469
+      md5: 2f6c27f54b907b5121c93eade71f31f6
+      size: 1676

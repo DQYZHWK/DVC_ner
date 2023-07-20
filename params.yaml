@@ -8,4 +8,4 @@ training:
   batch_size: 64
   lr: 0.001
   epoches: 30
-  print_step: 5
+  print_step: 532

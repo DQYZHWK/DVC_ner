@@ -29,7 +29,3 @@ stages:
       - data/processed/test_data.json 
       - data/processed/word2id.json
       - data/processed/tag2id.json
-    # 猜测：这里如果不写outs，那么即使在evaluate.py中进行了文件写，还是没有文件输出呢
-    outs:
-      - results/pred.json
-      - results/traget_tag_list.json
