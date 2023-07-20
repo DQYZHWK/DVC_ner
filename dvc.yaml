@@ -20,6 +20,9 @@ stages:
       - data/processed/dev_data.json
     outs:
       - models/model.pkl
+    params:
+      - lstm
+      - training
   
   evaluate:
     cmd: python src/evaluate.py
@@ -29,3 +32,6 @@ stages:
       - data/processed/test_data.json 
       - data/processed/word2id.json
       - data/processed/tag2id.json
+    params:
+      - lstm
+      - training

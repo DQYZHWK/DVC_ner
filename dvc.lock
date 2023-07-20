@@ -51,6 +51,18 @@ stages:
       hash: md5
       md5: a62690ac9d1773f1d89f6b598c2f9fc6
       size: 16941
+    params:
+      params.yaml:
+        lstm:
+          emb_size: 128
+          hidden_size: 128
+          if_crf: 1
+        training:
+          random_seed: 42
+          batch_size: 64
+          lr: 0.001
+          epoches: 30
+          print_step: 5
     outs:
     - path: models/model.pkl
       hash: md5
@@ -79,3 +91,15 @@ stages:
       hash: md5
       md5: 2f6c27f54b907b5121c93eade71f31f6
       size: 1676
+    params:
+      params.yaml:
+        lstm:
+          emb_size: 128
+          hidden_size: 128
+          if_crf: 1
+        training:
+          random_seed: 42
+          batch_size: 64
+          lr: 0.001
+          epoches: 30
+          print_step: 5
