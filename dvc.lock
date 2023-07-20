@@ -49,8 +49,8 @@ stages:
       size: 22104
     - path: src/train.py
       hash: md5
-      md5: a62690ac9d1773f1d89f6b598c2f9fc6
-      size: 16941
+      md5: cebbe2bb1c155e0d979ed8e6931c5a5f
+      size: 16999
     params:
       params.yaml:
         lstm:
@@ -60,7 +60,7 @@ stages:
         training:
           random_seed: 42
           batch_size: 64
-          lr: 0.001
+          lr: 2e-05
           epoches: 30
           print_step: 5
     outs:
@@ -100,6 +100,6 @@ stages:
         training:
           random_seed: 42
           batch_size: 64
-          lr: 0.001
+          lr: 2e-05
           epoches: 30
           print_step: 5
