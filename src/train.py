@@ -230,6 +230,7 @@ class BILSTM_Model(object):
 
         B = self.batch_size
         with Live("results/train", report=None,save_dvc_exp=True) as live:
+            live.log_params(yaml.load(open("params.yaml", encoding="utf-8")))
             for e in range(1, self.epoches+1):
                 self.step = 0
                 losses = 0.
