@@ -59,6 +59,8 @@ def build_map(lists):
 
     return maps
 
+
+# 这里start存在的必要性
 def prepocess_data_for_lstmcrf(word_lists, tag_lists, test=False):
     assert len(word_lists) == len(tag_lists)
     for i in range(len(word_lists)):
@@ -80,10 +82,11 @@ def data():
         build_corpus("train")
     dev_word_lists, dev_tag_lists = build_corpus("dev", make_vocab=False)
     test_word_lists, test_tag_lists = build_corpus("test", make_vocab=False)
-
+    
     # 如果是加了CRF的lstm还要加入<start>和<end> (解码的时候需要用到)
     crf_word2id, crf_tag2id = extend_maps(word2id, tag2id, for_crf = params.lstm.if_crf)
     
+        
     # 如果是加了CRF，数据集还需要额外的一些数据处理
     if params.lstm.if_crf:
         train_word_lists, train_tag_lists = prepocess_data_for_lstmcrf(
@@ -95,7 +98,8 @@ def data():
         test_word_lists, test_tag_lists = prepocess_data_for_lstmcrf(
             test_word_lists, test_tag_lists, test=True
         )
-
+    # 列表套列表，每个列表单元最后有一个<end>
+    #print(test_word_lists)
 
 
     with open('data/processed/word2id.json', 'w', encoding='utf-8') as f:

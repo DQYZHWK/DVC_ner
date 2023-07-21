@@ -322,6 +322,9 @@ class BILSTM_Model(object):
     def test(self, word_lists, tag_lists, word2id, tag2id):
         """返回最佳模型在测试集上的预测结果"""
         # 准备数据
+
+        
+        
         with Live("results/evaluate", report=None, cache_images=True,save_dvc_exp=True) as live:
             word_lists, tag_lists, indices = sort_by_lengths(word_lists, tag_lists)
             tensorized_sents, lengths = tensorized(word_lists, word2id)
@@ -395,7 +398,7 @@ def train():
     bilstm_model.train(train_word_lists, train_tag_lists,
                        dev_word_lists, dev_tag_lists, word2id, tag2id)
     
-    #save_model(bilstm_model,"models/model.pkl")
+    # save_model(bilstm_model,"models/model.pkl")
     print("训练完毕,共用时{}秒.".format(int(time.time()-start)))
 
 
