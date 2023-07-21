@@ -3,6 +3,9 @@ stages:
     cmd: python src/data.py
     deps:
       - src/data.py
+      - data/raw/dev.char.bmes
+      - data/raw/test.char.bmes
+      - data/raw/train.char.bmes
     outs:
       - data/processed/word2id.json
       - data/processed/tag2id.json

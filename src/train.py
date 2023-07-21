@@ -351,11 +351,19 @@ class BILSTM_Model(object):
             # 下面根据indices将pred_tag_lists和tag_lists转化为原来的顺序
             ind_maps = sorted(list(enumerate(indices)), key=lambda e: e[1])
             indices, _ = list(zip(*ind_maps))
-            pred_tag_lists = [item for item in(pred_tag_lists[i] for i in indices)]
-            # fsafsa
-            tag_lists = [item for item in (tag_lists[i] for i in indices)]
+            pred_tag_lists = [pred_tag_lists[i] for i in indices]
+            tag_lists = [tag_lists[i] for i in indices]
             
-            live.log_sklearn_plot("confusion_matrix",tag_lists, pred_tag_lists, name="cm.json")
+            preds=[]
+            reals=[]
+            for outer in pred_tag_lists:
+                for inter in outer:
+                    preds.append(inter)
+            for outer in tag_lists:
+                for inter in outer:
+                    reals.append(inter)
+            print(reals)    
+            live.log_sklearn_plot("confusion_matrix",reals, preds, name="cm.json")
 
 def save_model(model, file_name):
     """用于保存模型"""

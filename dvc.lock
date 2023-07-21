@@ -3,6 +3,18 @@ stages:
   data:
     cmd: python src/data.py
     deps:
+    - path: data/raw/dev.char.bmes
+      hash: md5
+      md5: 3053f33e3347af60dabc03e5e2a98dd6
+      size: 120251
+    - path: data/raw/test.char.bmes
+      hash: md5
+      md5: a0b7592d9fc2f254a03d9cf0bf81ba7a
+      size: 135064
+    - path: data/raw/train.char.bmes
+      hash: md5
+      md5: badab28955123a81149f5d3148290bf1
+      size: 1094528
     - path: src/data.py
       hash: md5
       md5: bd334e3138bebb6c064de7a02ae30ddc
@@ -49,8 +61,8 @@ stages:
       size: 22104
     - path: src/train.py
       hash: md5
-      md5: cebbe2bb1c155e0d979ed8e6931c5a5f
-      size: 16999
+      md5: 7c545834c7379360f83ae171f3a99d1a
+      size: 17228
     params:
       params.yaml:
         lstm:
@@ -60,14 +72,14 @@ stages:
         training:
           random_seed: 42
           batch_size: 64
-          lr: 2e-05
+          lr: 0.001
           epoches: 30
           print_step: 5
     outs:
     - path: models/model.pkl
       hash: md5
-      md5: 1bd0596b899d73a051f7e23fcfd82bb0
-      size: 15471642
+      md5: 4bd06ce2c8399e01f88d012d4850c822
+      size: 15471666
   evaluate:
     cmd: python src/evaluate.py
     deps:
@@ -85,8 +97,8 @@ stages:
       size: 22104
     - path: models/model.pkl
       hash: md5
-      md5: 1bd0596b899d73a051f7e23fcfd82bb0
-      size: 15471642
+      md5: 4bd06ce2c8399e01f88d012d4850c822
+      size: 15471666
     - path: src/evaluate.py
       hash: md5
       md5: 2f6c27f54b907b5121c93eade71f31f6
@@ -100,6 +112,6 @@ stages:
         training:
           random_seed: 42
           batch_size: 64
-          lr: 2e-05
+          lr: 0.001
           epoches: 30
           print_step: 5

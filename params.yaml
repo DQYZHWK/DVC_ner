@@ -6,6 +6,6 @@ lstm:
 training:
   random_seed : 42
   batch_size: 64
-  lr: 0.00002
+  lr: 0.001
   epoches: 30
   print_step: 5
